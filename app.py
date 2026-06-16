@@ -1,6 +1,10 @@
 import streamlit as st
 import datetime
 import time
+from zoneinfo import ZoneInfo
+
+# Timezone Configuration (IST)
+IST = ZoneInfo("Asia/Kolkata")
 
 # Page Configuration
 st.set_page_config(
@@ -40,7 +44,7 @@ for day, tasks in WEEKLY_SCHEDULE.items():
 # Helper functions for calculations
 def get_active_task_index(tasks):
     """Returns the index of the task that is active right now, or -1 if none."""
-    now_time = datetime.datetime.now().time()
+    now_time = datetime.datetime.now(IST).time()
     for idx, item in enumerate(tasks):
         try:
             parts = item["time"].split("-")
@@ -67,9 +71,9 @@ def get_time_remaining(time_str):
         parts = time_str.split("-")
         if len(parts) == 2:
             end_str = parts[1].strip()
-            now = datetime.datetime.now()
+            now = datetime.datetime.now(IST)
             end_time = datetime.datetime.strptime(end_str, "%I:%M %p").time()
-            end_dt = datetime.datetime.combine(now.date(), end_time)
+            end_dt = datetime.datetime.combine(now.date(), end_time, tzinfo=IST)
             
             if end_dt < now:
                 # Handle edge case where clock just passed the time
@@ -260,8 +264,8 @@ with st.sidebar:
     st.markdown("**System Environment:**")
     st.markdown(f"<div class='stat-item'>🐍 Python: 3.11.15</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='stat-item'>⚡ Streamlit: {st.__version__}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='stat-item'>📆 Today: {datetime.datetime.now().strftime('%A')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='stat-item'>🕒 Server Time: {datetime.datetime.now().strftime('%I:%M %p')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='stat-item'>📆 Today: {datetime.datetime.now(IST).strftime('%A')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='stat-item'>🕒 Current Time (IST): {datetime.datetime.now(IST).strftime('%I:%M %p')}</div>", unsafe_allow_html=True)
     
     st.markdown("---")
     st.markdown("**Global Actions:**")
@@ -276,7 +280,7 @@ with st.sidebar:
 # ---------------------------------------------------------
 # 5. MAIN HEADER
 # ---------------------------------------------------------
-now = datetime.datetime.now()
+now = datetime.datetime.now(IST)
 curr_day = now.strftime("%A")
 curr_time_str = now.strftime("%I:%M %p")
 
